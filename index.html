@@ -34,12 +34,11 @@
       background: #fdfdfd;
       padding: 0.25em 0;
       z-index: 10;
-      border-bottom: 1px solid #ddd;
     }
     label {
       display: flex;
       align-items: center;
-      padding: 6px;
+      padding: 12px;
       font-size: 1em;
       cursor: pointer;
     }
@@ -171,12 +170,15 @@
           });
           label.appendChild(checkbox);
           label.appendChild(document.createTextNode(" " + item));
+
+          // Ensure full-row tap works by attaching click to the label
           label.addEventListener("click", (e) => {
-            if (e.target !== checkbox) {
+            if (e.target.tagName !== 'INPUT') {
               checkbox.checked = !checkbox.checked;
               label.classList.toggle("checked", checkbox.checked);
             }
           });
+
           sectionDiv.appendChild(label);
         });
 
