@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fetal Anatomy Checklist</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 1em;
+      padding: 0 1em;
+      background-color: #fdfdfd;
+    }
+    h1 {
+      font-size: 1.5em;
+    }
+    .note {
+      font-size: 0.95em;
+      color: #444;
+      margin-bottom: 0.5em;
+    }
+    .section h2 {
+      font-size: 1.2em;
+      margin: 2em 0 0.5em;
+    }
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.5em;
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      font-size: 1.05em;
+      border-radius: 6px;
+    }
+    .item-label {
+      flex-grow: 1;
+    }
+    .status-box {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .status-box.green { background-color: #e0f2e9; }
+    .status-box.yellow { background-color: #fff9c4; }
+    .status-box.red { background-color: #fce4e4; }
+    .selected.green { background-color: green; }
+    .selected.yellow { background-color: #fbc02d; }
+    .selected.red { background-color: red; }
+    button.reset {
+      margin: 1em 0;
+      padding: 10px 16px;
+      font-size: 1em;
+      border-radius: 6px;
+      border: none;
+      background-color: #1976d2;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+    button.reset:hover {
+      background-color: #0d47a1;
+    }
+    hr.divider {
+      margin: 2em 0;
+      border: none;
+      border-top: 2px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fetal Anatomy Checklist</h1>
+  <div class="note">Tap a colored box to mark Normal (green), Uncertain (yellow), or Abnormal (red)</div>
+  <button class="reset" onclick="resetChecklist()">Reset Checklist</button>
+  <div id="checklist-main"></div>
+  <hr class="divider">
+  <div id="checklist-abnormal"></div>
+  <div id="checklist-uncertain"></div>
+  <div id="checklist-normal"></div>
+  <button class="reset" onclick="resetChecklist()">Reset Checklist</button>
+
+  <script>
+    const standardChecklist = {
+  "General": [
+    "Placenta",
+    "PCI",
+    "MVP",
+    "Cervix",
+    "Adnexa"
+  ],
+  "Head/Neck": [
+    "Lateral vents",
+    "Choroids",
+    "Falx",
+    "CSP",
+    "Cerebellum",
+    "Cisterna magna",
+    "NF",
+    "3rd vent*",
+    "4th vent*"
+  ],
+  "Face": [
+    "Profile",
+    "NB",
+    "Nose/Lips",
+    "Palate/Maxilla",
+    "Mandible",
+    "Orbits"
+  ],
+  "Heart/Chest": [
+    "Situs",
+    "4CH",
+    "Septum",
+    "LVOT",
+    "RVOT",
+    "3VV",
+    "Diaphragm",
+    "3VTV*",
+    "AA*",
+    "SVC/IVC*",
+    "Lungs*"
+  ],
+  "Abdomen": [
+    "Stomach",
+    "Kidneys",
+    "ACI",
+    "Bladder",
+    "3VC"
+  ],
+  "Extremities": [
+    "Left femur",
+    "Left tib/fib",
+    "Left foot",
+    "Right femur",
+    "Right tib/fib",
+    "Right foot",
+    "Left humerus",
+    "Left rad/ulna",
+    "Left hand",
+    "Right humerus",
+    "Right rad/ulna",
+    "Right hand"
+  ],
+  "Spine": [
+    "C Spine",
+    "T Spine",
+    "L Spine",
+    "S Spine"
+  ]
+};
+    const checklistState = {};
+
+    function renderChecklist() {
+      const mainContainer = document.getElementById("checklist-main");
+      const uncertainContainer = document.getElementById("checklist-uncertain");
+      const normalContainer = document.getElementById("checklist-normal");
+      const abnormalContainer = document.getElementById("checklist-abnormal");
+
+      mainContainer.innerHTML = "<h2>Remaining Items</h2>";
+      uncertainContainer.innerHTML = "<h2>Uncertain / Needs Comment</h2>";
+      normalContainer.innerHTML = "<h2>Normal Findings</h2>";
+      abnormalContainer.innerHTML = "<h2>Abnormal Findings</h2>";
+
+      for (const section in standardChecklist) {
+        const makeSection = () => {
+          const s = document.createElement("div");
+          const grid = document.createElement("div");
+          grid.className = "check-grid";
+          const title = document.createElement("h3");
+          title.textContent = section;
+          s.appendChild(title);
+          s.appendChild(grid);
+          return [s, grid];
+        };
+
+        const [sectionMain, gridMain] = makeSection();
+        const [sectionUncertain, gridUncertain] = makeSection();
+        const [sectionNormal, gridNormal] = makeSection();
+        const [sectionAbnormal, gridAbnormal] = makeSection();
+
+        let hasMain = false, hasUncertain = false, hasNormal = false, hasAbnormal = false;
+
+        standardChecklist[section].forEach(item => {
+          const state = checklistState[item] || "unmarked";
+
+          const row = document.createElement("div");
+          row.className = "check-row";
+
+          const greenBox = document.createElement("div");
+          greenBox.className = "status-box green";
+          const yellowBox = document.createElement("div");
+          yellowBox.className = "status-box yellow";
+          const redBox = document.createElement("div");
+          redBox.className = "status-box red";
+
+          if (state === "normal") greenBox.classList.add("selected", "green");
+          if (state === "uncertain") yellowBox.classList.add("selected", "yellow");
+          if (state === "abnormal") redBox.classList.add("selected", "red");
+
+          greenBox.onclick = () => {
+            checklistState[item] = (state === "normal") ? "unmarked" : "normal";
+            renderChecklist();
+          };
+          yellowBox.onclick = () => {
+            checklistState[item] = (state === "uncertain") ? "unmarked" : "uncertain";
+            renderChecklist();
+          };
+          redBox.onclick = () => {
+            checklistState[item] = (state === "abnormal") ? "unmarked" : "abnormal";
+            renderChecklist();
+          };
+
+          const label = document.createElement("div");
+          label.className = "item-label";
+          label.textContent = item;
+
+          row.appendChild(greenBox);
+          row.appendChild(yellowBox);
+          row.appendChild(redBox);
+          row.appendChild(label);
+
+          if (state === "normal") {
+            gridNormal.appendChild(row);
+            hasNormal = true;
+          } else if (state === "uncertain") {
+            gridUncertain.appendChild(row);
+            hasUncertain = true;
+          } else if (state === "abnormal") {
+            gridAbnormal.appendChild(row);
+            hasAbnormal = true;
+          } else {
+            gridMain.appendChild(row);
+            hasMain = true;
+          }
+        });
+
+        if (hasMain) mainContainer.appendChild(sectionMain);
+        if (hasAbnormal) abnormalContainer.appendChild(sectionAbnormal);
+        if (hasUncertain) uncertainContainer.appendChild(sectionUncertain);
+        if (hasNormal) normalContainer.appendChild(sectionNormal);
+      }
+    }
+
+    function resetChecklist() {
+      Object.keys(checklistState).forEach(k => checklistState[k] = "unmarked");
+      renderChecklist();
+    }
+
+    document.addEventListener("DOMContentLoaded", renderChecklist);
+  </script>
+
+</body>
+</html>
