@@ -202,6 +202,53 @@
             font-size: 1.2em;
         }
 
+        .notes-section {
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .notes-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .note-item {
+            background: white;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #0ea5e9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .note-time {
+            font-size: 0.85em;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .note-text {
+            color: #1e293b;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        .no-notes {
+            color: #64748b;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+
         .progress-section {
             padding: 20px 30px;
             background: #f8f9fa;
@@ -473,6 +520,7 @@
             <button class="stop-btn" id="stopBtn" style="display:none;">Stop Listening</button>
             <button class="reset-btn" id="resetBtn">Reset All</button>
             <button class="reset-btn" id="showMissedBtn">Show Missed Items</button>
+            <button class="start-btn" id="viewNotesBtn">View Notes</button>
             <button class="download-debug-btn" id="downloadDebugBtn" style="display:none;">Download Debug Log</button>
         </div>
 
@@ -588,6 +636,7 @@
         let allTestItems = [];
         let debugMode = false;
         let debugLog = [];
+        let notes = []; // Store notes taken during scan
 
         // Debug logging function
         function addDebugEntry(transcript, matched = null) {
@@ -860,11 +909,61 @@
             return itemDiv;
         }
 
+        // View all notes taken during scan
+        function viewNotes() {
+            const checklistEl = document.getElementById('checklist');
+            checklistEl.innerHTML = '';
+
+            // Add notes section
+            const notesSection = document.createElement('div');
+            notesSection.className = 'notes-section';
+
+            const notesHeader = document.createElement('div');
+            notesHeader.className = 'notes-header';
+            notesHeader.innerHTML = '📝 Scan Notes (' + notes.length + ')';
+            notesSection.appendChild(notesHeader);
+
+            if (notes.length === 0) {
+                const noNotes = document.createElement('div');
+                noNotes.className = 'no-notes';
+                noNotes.textContent = 'No notes taken yet. Say "note:" followed by your comment to add a note.';
+                notesSection.appendChild(noNotes);
+            } else {
+                notes.forEach(note => {
+                    const noteItem = document.createElement('div');
+                    noteItem.className = 'note-item';
+                    
+                    const noteTime = document.createElement('div');
+                    noteTime.className = 'note-time';
+                    noteTime.textContent = note.time;
+                    noteItem.appendChild(noteTime);
+                    
+                    const noteText = document.createElement('div');
+                    noteText.className = 'note-text';
+                    noteText.textContent = note.text;
+                    noteItem.appendChild(noteText);
+                    
+                    notesSection.appendChild(noteItem);
+                });
+            }
+
+            checklistEl.appendChild(notesSection);
+
+            // Add button to go back to checklist
+            const backButton = document.createElement('button');
+            backButton.className = 'reset-btn';
+            backButton.textContent = '← Back to Checklist';
+            backButton.style.margin = '20px auto';
+            backButton.style.display = 'block';
+            backButton.onclick = () => {
+                initChecklist();
+                sortChecklistByStatus();
+            };
+            checklistEl.appendChild(backButton);
+        }
+
         // Show missed items by sorting them to the top
         function showMissedItems() {
-            const checklistEl = document.getElementById('checklist');
-            const categories = checklistEl.querySelectorAll('.category');
-            
             // Check if there are any unchecked items
             const missedItems = [];
             allTestItems.forEach(item => {
@@ -878,7 +977,7 @@
                 return;
             }
 
-            // Clear existing checklist
+            const checklistEl = document.getElementById('checklist');
             checklistEl.innerHTML = '';
 
             // Add missed items header
@@ -908,8 +1007,7 @@
                 categoryDiv.appendChild(categoryTitle);
 
                 items.forEach(item => {
-                    const itemDiv = document.querySelector(`[data-id="${item.id}"]`).cloneNode(true);
-                    itemDiv.addEventListener('click', () => toggleItem(item.id));
+                    const itemDiv = createChecklistItem(item);
                     categoryDiv.appendChild(itemDiv);
                 });
 
@@ -952,13 +1050,13 @@
                 categoryDiv.appendChild(categoryTitle);
 
                 items.forEach(item => {
-                    const itemDiv = document.querySelector(`[data-id="${item.id}"]`).cloneNode(true);
-                    itemDiv.addEventListener('click', () => toggleItem(item.id));
+                    const itemDiv = createChecklistItem(item);
                     categoryDiv.appendChild(itemDiv);
                 });
 
                 checklistEl.appendChild(categoryDiv);
             });
+        }
         }
 
         // Process speech and check items
@@ -966,10 +1064,50 @@
             const lowerTranscript = transcript.toLowerCase();
             document.getElementById('transcript').textContent = `Last heard: "${transcript}"`;
 
+            // Check for note-taking commands
+            const notePatterns = [
+                /^note[:\s]+(.+)/i,
+                /^comment[:\s]+(.+)/i,
+                /^notation[:\s]+(.+)/i,
+                /^add note[:\s]+(.+)/i
+            ];
+
+            for (const pattern of notePatterns) {
+                const match = transcript.match(pattern);
+                if (match) {
+                    const noteText = match[1].trim();
+                    const timestamp = new Date().toLocaleTimeString();
+                    notes.push({ time: timestamp, text: noteText });
+                    addDebugEntry(transcript, ['NOTE CAPTURED: ' + noteText]);
+                    
+                    // Play a different beep for note capture
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    oscillator.frequency.value = 1000;
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                    
+                    return;
+                }
+            }
+
             // Check for "done" or "show missed" commands
             if (lowerTranscript.includes('done') || lowerTranscript.includes('show missed') || lowerTranscript.includes('missed items')) {
                 showMissedItems();
                 addDebugEntry(transcript, ['SHOW MISSED COMMAND']);
+                return;
+            }
+
+            // Check for "view notes" or "show notes" commands
+            if (lowerTranscript.includes('view notes') || lowerTranscript.includes('show notes')) {
+                viewNotes();
+                addDebugEntry(transcript, ['VIEW NOTES COMMAND']);
                 return;
             }
 
@@ -1177,8 +1315,9 @@
         });
 
         document.getElementById('resetBtn').addEventListener('click', () => {
-            if (confirm('Reset all checked items?')) {
+            if (confirm('Reset all checked items and notes?')) {
                 checkedItems.clear();
+                notes = []; // Clear notes too
                 document.querySelectorAll('.checklist-item').forEach(item => {
                     item.classList.remove('checked');
                 });
@@ -1186,6 +1325,8 @@
                 document.getElementById('transcript').textContent = 'Last heard: ...';
                 testModeIndex = 0;
                 updateTestDisplay();
+                initChecklist();
+                sortChecklistByStatus();
             }
         });
 
@@ -1211,6 +1352,9 @@
 
         // Show missed items button
         document.getElementById('showMissedBtn').addEventListener('click', showMissedItems);
+
+        // View notes button
+        document.getElementById('viewNotesBtn').addEventListener('click', viewNotes);
 
         // Initialize
         initChecklist();
