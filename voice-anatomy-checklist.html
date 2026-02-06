@@ -185,70 +185,6 @@
             color: white;
         }
 
-        .show-missed-btn {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .missed-items-header {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 10px;
-            font-weight: 700;
-            color: #92400e;
-            text-align: center;
-            font-size: 1.2em;
-        }
-
-        .notes-section {
-            background: #e0f2fe;
-            border: 2px solid #0ea5e9;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .notes-header {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #0369a1;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .note-item {
-            background: white;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid #0ea5e9;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .note-time {
-            font-size: 0.85em;
-            color: #64748b;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .note-text {
-            color: #1e293b;
-            font-size: 1em;
-            line-height: 1.4;
-        }
-
-        .no-notes {
-            color: #64748b;
-            font-style: italic;
-            text-align: center;
-            padding: 10px;
-        }
-
         .progress-section {
             padding: 20px 30px;
             background: #f8f9fa;
@@ -488,6 +424,65 @@
             font-size: 30px;
         }
 
+        .missed-items-header {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-weight: 700;
+            color: #92400e;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .notes-section {
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .notes-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .note-item {
+            background: white;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #0ea5e9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .note-time {
+            font-size: 0.85em;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .note-text {
+            color: #1e293b;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        .no-notes {
+            color: #64748b;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+
         .unsupported {
             padding: 30px;
             background: #fee2e2;
@@ -534,7 +529,6 @@
 
         <div class="debug-panel" id="debugPanel"></div>
 
-        <!-- Test Mode -->
         <div class="test-mode" id="testMode">
             <div class="test-item-display">
                 <div class="test-item-name" id="testItemName">Click "Next" to start</div>
@@ -548,19 +542,17 @@
             </div>
         </div>
 
-        <!-- Normal Mode -->
         <div class="checklist active" id="checklist"></div>
     </div>
 
     <div class="listening-indicator" id="listeningIndicator"></div>
 
     <script>
-        // Your exact checklist reorganized to match ultrasound software layout
         const checklistData = {
             "General": [
                 { text: "Placenta", keywords: ["placenta", "placental"] },
-                { text: "PCI", keywords: ["pci", "placental cord insertion", "cord insertion"] },
-                { text: "MVP", keywords: ["mvp", "maximum vertical pocket"] },
+                { text: "PCI", keywords: ["pci", "placental cord insertion", "cord insertion", "ponto cord insertion"] },
+                { text: "MVP", keywords: ["mvp", "maximum vertical pocket", "fluid"] },
                 { text: "Cervix", keywords: ["cervix", "cervical"] },
                 { text: "Adnexa", keywords: ["adnexa", "adnexal", "add nexa", "addnexa"] }
             ],
@@ -603,7 +595,7 @@
                 { text: "Stomach", keywords: ["stomach", "gastric", "stomach bubble"] },
                 { text: "Kidneys", keywords: ["kidney", "kidneys", "renal"] },
                 { text: "Bladder", keywords: ["bladder", "urinary bladder"] },
-                { text: "ACI", keywords: ["aci", "abdominal cord insertion"] },
+                { text: "ACI", keywords: ["aci", "abdominal cord insertion", "for aci"] },
                 { text: "3VC", keywords: ["3vc", "three vessel cord", "cord vessels"] }
             ],
             "Spine": [
@@ -620,7 +612,7 @@
                 { text: "Right hand", keywords: ["right hand", "both hands", "right forearm in hand"] },
                 { text: "Left hand", keywords: ["left hand", "both hands", "left hand and left forearm", "left forearm and hand"] },
                 { text: "Right femur", keywords: ["right femur", "right leg", "right thigh", "both femurs", "both femur", "both legs"] },
-                { text: "Left femur", keywords: ["left femur", "left leg", "left thigh", "both femurs", "both femur", "both legs"] },
+                { text: "Left femur", keywords: ["left femur", "left leg", "left thigh", "both femurs", "both femur", "both legs", "the femur"] },
                 { text: "Right tib/fib", keywords: ["right tib", "right fib", "right tibia", "right fibula", "right lower leg", "right tip fib", "right hip fib", "right femur and tib", "right femur tib", "both lower legs", "both ted fib", "both tib fib", "right and left tab fib", "right and left tib fib"] },
                 { text: "Left tib/fib", keywords: ["left tib", "left fib", "left tibia", "left fibula", "left lower leg", "lifted", "lift tib", "left tip fib", "left hip fib", "left femur and tib", "left femur tib", "both lower legs", "both ted fib", "both tib fib", "right and left tab fib", "right and left tib fib"] },
                 { text: "Right foot", keywords: ["right foot", "right feet", "both feet", "both foot"] },
@@ -636,56 +628,8 @@
         let allTestItems = [];
         let debugMode = false;
         let debugLog = [];
-        let notes = []; // Store notes taken during scan
+        let notes = [];
 
-        // Debug logging function
-        function addDebugEntry(transcript, matched = null) {
-            if (!debugMode) return;
-
-            const timestamp = new Date().toLocaleTimeString();
-            const entry = {
-                timestamp: timestamp,
-                transcript: transcript,
-                matched: matched
-            };
-            debugLog.push(entry);
-
-            // Update debug panel
-            const debugPanel = document.getElementById('debugPanel');
-            const entryDiv = document.createElement('div');
-            entryDiv.className = 'debug-entry';
-            
-            let html = `<span class="debug-timestamp">[${timestamp}]</span> "${transcript}"`;
-            if (matched && matched.length > 0) {
-                html += ` <span class="debug-matched">→ MATCHED: ${matched.join(', ')}</span>`;
-            }
-            entryDiv.innerHTML = html;
-            
-            debugPanel.insertBefore(entryDiv, debugPanel.firstChild);
-        }
-
-        // Download debug log
-        function downloadDebugLog() {
-            const logText = debugLog.map(entry => {
-                let line = `[${entry.timestamp}] "${entry.transcript}"`;
-                if (entry.matched && entry.matched.length > 0) {
-                    line += ` → MATCHED: ${entry.matched.join(', ')}`;
-                }
-                return line;
-            }).join('\n');
-
-            const blob = new Blob([logText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `voice-debug-log-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Initialize the checklist
         function initChecklist() {
             const checklistEl = document.getElementById('checklist');
             checklistEl.innerHTML = '';
@@ -706,7 +650,6 @@
                     itemDiv.dataset.id = itemId;
                     itemDiv.dataset.keywords = JSON.stringify(item.keywords);
                     
-                    // Create keywords display (first 5 keywords, then "+ X more")
                     const displayKeywords = item.keywords.slice(0, 5);
                     const remainingCount = item.keywords.length - 5;
                     let keywordsText = displayKeywords.map(k => `"${k}"`).join(', ');
@@ -725,7 +668,6 @@
                     itemDiv.addEventListener('click', () => toggleItem(itemId));
                     categoryDiv.appendChild(itemDiv);
 
-                    // Add to test items array
                     allTestItems.push({
                         id: itemId,
                         category: category,
@@ -738,158 +680,16 @@
             });
         }
 
-        // Toggle item checked state
-        function toggleItem(itemId, playSound = true) {
-            const itemEl = document.querySelector(`[data-id="${itemId}"]`);
-            if (!itemEl) return;
-
-            if (checkedItems.has(itemId)) {
-                checkedItems.delete(itemId);
-                itemEl.classList.remove('checked');
-            } else {
-                checkedItems.add(itemId);
-                itemEl.classList.add('checked', 'just-checked');
-                if (playSound) {
-                    playCheckSound(1);
-                }
-                setTimeout(() => itemEl.classList.remove('just-checked'), 600);
-            }
-
-            updateProgress();
-            
-            // Sort checklist after toggling
-            setTimeout(() => sortChecklistByStatus(), 100);
-        }
-
-        // Play a subtle check sound (multiple beeps for multiple items)
-        function playCheckSound(count = 1) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.value = 800;
-                    oscillator.type = 'sine';
-                    
-                    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.1);
-                }, i * 200); // 200ms between beeps
-            }
-        }
-
-        // Play a different sound for already-checked items (lower pitch, single beep)
-        function playAlreadyCheckedSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = 400; // Lower pitch than check sound
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.15);
-        }
-
-        // Update progress bar
-        function updateProgress() {
-            const totalItems = allTestItems.length;
-            const checkedCount = checkedItems.size;
-            const percentage = Math.round((checkedCount / totalItems) * 100);
-            
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = percentage + '%';
-            progressFill.textContent = `${checkedCount}/${totalItems} (${percentage}%)`;
-        }
-
-        // Sort checklist to show unchecked items first
-        function sortChecklistByStatus() {
-            const checklistEl = document.getElementById('checklist');
-            
-            // Get current category order from the original data
-            const categoryOrder = Object.keys(checklistData);
-            
-            // Group items by category and checked status
-            const categorizedItems = {};
-            
-            // Initialize all categories
-            categoryOrder.forEach(category => {
-                categorizedItems[category] = {
-                    unchecked: [],
-                    checked: []
-                };
-            });
-            
-            // Populate with items
-            allTestItems.forEach(item => {
-                const isChecked = checkedItems.has(item.id);
-                if (isChecked) {
-                    categorizedItems[item.category].checked.push(item);
-                } else {
-                    categorizedItems[item.category].unchecked.push(item);
-                }
-            });
-
-            // Rebuild the checklist
-            checklistEl.innerHTML = '';
-
-            // Add categories in original order
-            categoryOrder.forEach(category => {
-                const items = categorizedItems[category];
-                
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'category';
-                
-                const categoryTitle = document.createElement('div');
-                categoryTitle.className = 'category-title';
-                const uncheckedCount = items.unchecked.length;
-                const checkedCount = items.checked.length;
-                const totalCount = uncheckedCount + checkedCount;
-                categoryTitle.textContent = `${category} (${checkedCount}/${totalCount})`;
-                categoryDiv.appendChild(categoryTitle);
-
-                // Add unchecked items first
-                items.unchecked.forEach(item => {
-                    const itemDiv = createChecklistItem(item);
-                    categoryDiv.appendChild(itemDiv);
-                });
-
-                // Add checked items after
-                items.checked.forEach(item => {
-                    const itemDiv = createChecklistItem(item);
-                    categoryDiv.appendChild(itemDiv);
-                });
-
-                checklistEl.appendChild(categoryDiv);
-            });
-        }
-
-        // Helper function to create a checklist item element
         function createChecklistItem(item) {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'checklist-item';
             itemDiv.dataset.id = item.id;
             itemDiv.dataset.keywords = JSON.stringify(item.keywords);
             
-            // Apply checked state
             if (checkedItems.has(item.id)) {
                 itemDiv.classList.add('checked');
             }
             
-            // Create keywords display
             const displayKeywords = item.keywords.slice(0, 5);
             const remainingCount = item.keywords.length - 5;
             let keywordsText = displayKeywords.map(k => `"${k}"`).join(', ');
@@ -909,12 +709,132 @@
             return itemDiv;
         }
 
-        // View all notes taken during scan
+        function toggleItem(itemId, playSound = true) {
+            const itemEl = document.querySelector(`[data-id="${itemId}"]`);
+            if (!itemEl) return;
+
+            if (checkedItems.has(itemId)) {
+                checkedItems.delete(itemId);
+                itemEl.classList.remove('checked');
+            } else {
+                checkedItems.add(itemId);
+                itemEl.classList.add('checked', 'just-checked');
+                if (playSound) {
+                    playCheckSound(1);
+                }
+                setTimeout(() => itemEl.classList.remove('just-checked'), 600);
+            }
+
+            updateProgress();
+            setTimeout(() => sortChecklistByStatus(), 100);
+        }
+
+        function playCheckSound(count = 1) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                }, i * 200);
+            }
+        }
+
+        function playAlreadyCheckedSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 400;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }
+
+        function updateProgress() {
+            const totalItems = allTestItems.length;
+            const checkedCount = checkedItems.size;
+            const percentage = Math.round((checkedCount / totalItems) * 100);
+            
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = `${checkedCount}/${totalItems} (${percentage}%)`;
+        }
+
+        function sortChecklistByStatus() {
+            const checklistEl = document.getElementById('checklist');
+            const categoryOrder = Object.keys(checklistData);
+            const categorizedItems = {};
+            
+            categoryOrder.forEach(category => {
+                categorizedItems[category] = {
+                    unchecked: [],
+                    checked: []
+                };
+            });
+            
+            allTestItems.forEach(item => {
+                const isChecked = checkedItems.has(item.id);
+                if (isChecked) {
+                    categorizedItems[item.category].checked.push(item);
+                } else {
+                    categorizedItems[item.category].unchecked.push(item);
+                }
+            });
+
+            checklistEl.innerHTML = '';
+
+            categoryOrder.forEach(category => {
+                const items = categorizedItems[category];
+                
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const categoryTitle = document.createElement('div');
+                categoryTitle.className = 'category-title';
+                const uncheckedCount = items.unchecked.length;
+                const checkedCount = items.checked.length;
+                const totalCount = uncheckedCount + checkedCount;
+                categoryTitle.textContent = `${category} (${checkedCount}/${totalCount})`;
+                categoryDiv.appendChild(categoryTitle);
+
+                items.unchecked.forEach(item => {
+                    const itemDiv = createChecklistItem(item);
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                items.checked.forEach(item => {
+                    const itemDiv = createChecklistItem(item);
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                checklistEl.appendChild(categoryDiv);
+            });
+        }
+
         function viewNotes() {
             const checklistEl = document.getElementById('checklist');
             checklistEl.innerHTML = '';
 
-            // Add notes section
             const notesSection = document.createElement('div');
             notesSection.className = 'notes-section';
 
@@ -949,7 +869,6 @@
 
             checklistEl.appendChild(notesSection);
 
-            // Add button to go back to checklist
             const backButton = document.createElement('button');
             backButton.className = 'reset-btn';
             backButton.textContent = '← Back to Checklist';
@@ -962,9 +881,7 @@
             checklistEl.appendChild(backButton);
         }
 
-        // Show missed items by sorting them to the top
         function showMissedItems() {
-            // Check if there are any unchecked items
             const missedItems = [];
             allTestItems.forEach(item => {
                 if (!checkedItems.has(item.id)) {
@@ -980,13 +897,11 @@
             const checklistEl = document.getElementById('checklist');
             checklistEl.innerHTML = '';
 
-            // Add missed items header
             const missedHeader = document.createElement('div');
             missedHeader.className = 'missed-items-header';
             missedHeader.textContent = `⚠️ ${missedItems.length} Missed Items - Review These First`;
             checklistEl.appendChild(missedHeader);
 
-            // Group missed items by category
             const missedByCategory = {};
             missedItems.forEach(item => {
                 if (!missedByCategory[item.category]) {
@@ -995,7 +910,6 @@
                 missedByCategory[item.category].push(item);
             });
 
-            // Add missed items sections
             Object.entries(missedByCategory).forEach(([category, items]) => {
                 const categoryDiv = document.createElement('div');
                 categoryDiv.className = 'category';
@@ -1014,21 +928,18 @@
                 checklistEl.appendChild(categoryDiv);
             });
 
-            // Add separator
             const separator = document.createElement('div');
             separator.style.height = '2px';
             separator.style.background = '#e5e7eb';
             separator.style.margin = '30px 0';
             checklistEl.appendChild(separator);
 
-            // Add completed items header
             const completedHeader = document.createElement('div');
             completedHeader.className = 'category-title';
             completedHeader.textContent = '✓ Completed Items';
             completedHeader.style.color = '#22c55e';
             checklistEl.appendChild(completedHeader);
 
-            // Group completed items by category
             const completedByCategory = {};
             allTestItems.forEach(item => {
                 if (checkedItems.has(item.id)) {
@@ -1039,7 +950,6 @@
                 }
             });
 
-            // Add completed items sections
             Object.entries(completedByCategory).forEach(([category, items]) => {
                 const categoryDiv = document.createElement('div');
                 categoryDiv.className = 'category';
@@ -1057,14 +967,55 @@
                 checklistEl.appendChild(categoryDiv);
             });
         }
+
+        function addDebugEntry(transcript, matched = null) {
+            if (!debugMode) return;
+
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = {
+                timestamp: timestamp,
+                transcript: transcript,
+                matched: matched
+            };
+            debugLog.push(entry);
+
+            const debugPanel = document.getElementById('debugPanel');
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'debug-entry';
+            
+            let html = `<span class="debug-timestamp">[${timestamp}]</span> "${transcript}"`;
+            if (matched && matched.length > 0) {
+                html += ` <span class="debug-matched">→ MATCHED: ${matched.join(', ')}</span>`;
+            }
+            entryDiv.innerHTML = html;
+            
+            debugPanel.insertBefore(entryDiv, debugPanel.firstChild);
         }
 
-        // Process speech and check items
+        function downloadDebugLog() {
+            const logText = debugLog.map(entry => {
+                let line = `[${entry.timestamp}] "${entry.transcript}"`;
+                if (entry.matched && entry.matched.length > 0) {
+                    line += ` → MATCHED: ${entry.matched.join(', ')}`;
+                }
+                return line;
+            }).join('\n');
+
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `voice-debug-log-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
         function processSpeech(transcript) {
             const lowerTranscript = transcript.toLowerCase();
             document.getElementById('transcript').textContent = `Last heard: "${transcript}"`;
 
-            // Check for note-taking commands
             const notePatterns = [
                 /^note[:\s]+(.+)/i,
                 /^comment[:\s]+(.+)/i,
@@ -1080,7 +1031,6 @@
                     notes.push({ time: timestamp, text: noteText });
                     addDebugEntry(transcript, ['NOTE CAPTURED: ' + noteText]);
                     
-                    // Play a different beep for note capture
                     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     const oscillator = audioContext.createOscillator();
                     const gainNode = audioContext.createGain();
@@ -1097,14 +1047,12 @@
                 }
             }
 
-            // Check for "done" or "show missed" commands
             if (lowerTranscript.includes('done') || lowerTranscript.includes('show missed') || lowerTranscript.includes('missed items')) {
                 showMissedItems();
                 addDebugEntry(transcript, ['SHOW MISSED COMMAND']);
                 return;
             }
 
-            // Check for "view notes" or "show notes" commands
             if (lowerTranscript.includes('view notes') || lowerTranscript.includes('show notes')) {
                 viewNotes();
                 addDebugEntry(transcript, ['VIEW NOTES COMMAND']);
@@ -1116,7 +1064,6 @@
             let alreadyCheckedCount = 0;
 
             if (currentMode === 'test') {
-                // Test mode - only check current item
                 if (testModeIndex < allTestItems.length) {
                     const currentItem = allTestItems[testModeIndex];
                     const matched = currentItem.keywords.some(keyword => 
@@ -1125,13 +1072,12 @@
 
                     if (matched) {
                         if (!checkedItems.has(currentItem.id)) {
-                            toggleItem(currentItem.id, false); // Don't play sound yet
+                            toggleItem(currentItem.id, false);
                             matchedItems.push(currentItem.text);
                             newlyCheckedCount++;
                             document.getElementById('testStatus').textContent = `✓ Recognized! "${transcript}"`;
                             document.getElementById('testStatus').className = 'test-status recognized';
                             
-                            // Auto-advance after 1 second
                             setTimeout(() => {
                                 nextTestItem();
                             }, 1000);
@@ -1142,7 +1088,6 @@
                     }
                 }
             } else {
-                // Normal mode - check all items
                 allTestItems.forEach(item => {
                     const matched = item.keywords.some(keyword => 
                         lowerTranscript.includes(keyword.toLowerCase())
@@ -1150,7 +1095,7 @@
 
                     if (matched) {
                         if (!checkedItems.has(item.id)) {
-                            toggleItem(item.id, false); // Don't play sound yet
+                            toggleItem(item.id, false);
                             matchedItems.push(item.text);
                             newlyCheckedCount++;
                         } else {
@@ -1161,21 +1106,18 @@
                 });
             }
 
-            // Play appropriate sounds
             if (newlyCheckedCount > 0) {
                 playCheckSound(newlyCheckedCount);
             }
             if (alreadyCheckedCount > 0) {
                 setTimeout(() => {
                     playAlreadyCheckedSound();
-                }, newlyCheckedCount * 200 + 100); // Play after new check sounds
+                }, newlyCheckedCount * 200 + 100);
             }
 
-            // Add to debug log
             addDebugEntry(transcript, matchedItems.length > 0 ? matchedItems : null);
         }
 
-        // Test mode functions
         function updateTestDisplay() {
             if (testModeIndex >= allTestItems.length) {
                 document.getElementById('testItemName').textContent = '✓ Test Complete!';
@@ -1216,36 +1158,6 @@
             }
         }
 
-        // Mode switching
-        document.getElementById('normalModeBtn').addEventListener('click', () => {
-            currentMode = 'normal';
-            document.getElementById('normalModeBtn').classList.add('active');
-            document.getElementById('testModeBtn').classList.remove('active');
-            document.getElementById('checklist').classList.add('active');
-            document.getElementById('testMode').classList.remove('active');
-        });
-
-        document.getElementById('testModeBtn').addEventListener('click', () => {
-            currentMode = 'test';
-            document.getElementById('testModeBtn').classList.add('active');
-            document.getElementById('normalModeBtn').classList.remove('active');
-            document.getElementById('testMode').classList.add('active');
-            document.getElementById('checklist').classList.remove('active');
-            testModeIndex = 0;
-            updateTestDisplay();
-        });
-
-        document.getElementById('nextTestBtn').addEventListener('click', nextTestItem);
-        document.getElementById('prevTestBtn').addEventListener('click', prevTestItem);
-        document.getElementById('skipTestBtn').addEventListener('click', () => {
-            const item = allTestItems[testModeIndex];
-            if (!checkedItems.has(item.id)) {
-                toggleItem(item.id);
-            }
-            nextTestItem();
-        });
-
-        // Initialize speech recognition
         function initSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 document.getElementById('checklist').innerHTML = `
@@ -1301,7 +1213,6 @@
             };
         }
 
-        // Event listeners
         document.getElementById('startBtn').addEventListener('click', () => {
             if (recognition) {
                 recognition.start();
@@ -1317,10 +1228,7 @@
         document.getElementById('resetBtn').addEventListener('click', () => {
             if (confirm('Reset all checked items and notes?')) {
                 checkedItems.clear();
-                notes = []; // Clear notes too
-                document.querySelectorAll('.checklist-item').forEach(item => {
-                    item.classList.remove('checked');
-                });
+                notes = [];
                 updateProgress();
                 document.getElementById('transcript').textContent = 'Last heard: ...';
                 testModeIndex = 0;
@@ -1330,7 +1238,34 @@
             }
         });
 
-        // Debug mode toggle
+        document.getElementById('normalModeBtn').addEventListener('click', () => {
+            currentMode = 'normal';
+            document.getElementById('normalModeBtn').classList.add('active');
+            document.getElementById('testModeBtn').classList.remove('active');
+            document.getElementById('checklist').classList.add('active');
+            document.getElementById('testMode').classList.remove('active');
+        });
+
+        document.getElementById('testModeBtn').addEventListener('click', () => {
+            currentMode = 'test';
+            document.getElementById('testModeBtn').classList.add('active');
+            document.getElementById('normalModeBtn').classList.remove('active');
+            document.getElementById('testMode').classList.add('active');
+            document.getElementById('checklist').classList.remove('active');
+            testModeIndex = 0;
+            updateTestDisplay();
+        });
+
+        document.getElementById('nextTestBtn').addEventListener('click', nextTestItem);
+        document.getElementById('prevTestBtn').addEventListener('click', prevTestItem);
+        document.getElementById('skipTestBtn').addEventListener('click', () => {
+            const item = allTestItems[testModeIndex];
+            if (!checkedItems.has(item.id)) {
+                toggleItem(item.id);
+            }
+            nextTestItem();
+        });
+
         document.getElementById('debugToggle').addEventListener('change', (e) => {
             debugMode = e.target.checked;
             const debugPanel = document.getElementById('debugPanel');
@@ -1347,16 +1282,10 @@
             }
         });
 
-        // Download debug log button
         document.getElementById('downloadDebugBtn').addEventListener('click', downloadDebugLog);
-
-        // Show missed items button
         document.getElementById('showMissedBtn').addEventListener('click', showMissedItems);
-
-        // View notes button
         document.getElementById('viewNotesBtn').addEventListener('click', viewNotes);
 
-        // Initialize
         initChecklist();
         initSpeechRecognition();
         updateProgress();
