@@ -707,6 +707,9 @@
             }
 
             updateProgress();
+            
+            // Sort checklist after toggling
+            setTimeout(() => sortChecklistByStatus(), 100);
         }
 
         // Play a subtle check sound (multiple beeps for multiple items)
@@ -761,6 +764,100 @@
             const progressFill = document.getElementById('progressFill');
             progressFill.style.width = percentage + '%';
             progressFill.textContent = `${checkedCount}/${totalItems} (${percentage}%)`;
+        }
+
+        // Sort checklist to show unchecked items first
+        function sortChecklistByStatus() {
+            const checklistEl = document.getElementById('checklist');
+            
+            // Get current category order from the original data
+            const categoryOrder = Object.keys(checklistData);
+            
+            // Group items by category and checked status
+            const categorizedItems = {};
+            
+            // Initialize all categories
+            categoryOrder.forEach(category => {
+                categorizedItems[category] = {
+                    unchecked: [],
+                    checked: []
+                };
+            });
+            
+            // Populate with items
+            allTestItems.forEach(item => {
+                const isChecked = checkedItems.has(item.id);
+                if (isChecked) {
+                    categorizedItems[item.category].checked.push(item);
+                } else {
+                    categorizedItems[item.category].unchecked.push(item);
+                }
+            });
+
+            // Rebuild the checklist
+            checklistEl.innerHTML = '';
+
+            // Add categories in original order
+            categoryOrder.forEach(category => {
+                const items = categorizedItems[category];
+                
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const categoryTitle = document.createElement('div');
+                categoryTitle.className = 'category-title';
+                const uncheckedCount = items.unchecked.length;
+                const checkedCount = items.checked.length;
+                const totalCount = uncheckedCount + checkedCount;
+                categoryTitle.textContent = `${category} (${checkedCount}/${totalCount})`;
+                categoryDiv.appendChild(categoryTitle);
+
+                // Add unchecked items first
+                items.unchecked.forEach(item => {
+                    const itemDiv = createChecklistItem(item);
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                // Add checked items after
+                items.checked.forEach(item => {
+                    const itemDiv = createChecklistItem(item);
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                checklistEl.appendChild(categoryDiv);
+            });
+        }
+
+        // Helper function to create a checklist item element
+        function createChecklistItem(item) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'checklist-item';
+            itemDiv.dataset.id = item.id;
+            itemDiv.dataset.keywords = JSON.stringify(item.keywords);
+            
+            // Apply checked state
+            if (checkedItems.has(item.id)) {
+                itemDiv.classList.add('checked');
+            }
+            
+            // Create keywords display
+            const displayKeywords = item.keywords.slice(0, 5);
+            const remainingCount = item.keywords.length - 5;
+            let keywordsText = displayKeywords.map(k => `"${k}"`).join(', ');
+            if (remainingCount > 0) {
+                keywordsText += `, +${remainingCount} more`;
+            }
+            
+            itemDiv.innerHTML = `
+                <div class="checkbox"></div>
+                <div style="flex: 1;">
+                    <div class="item-text">${item.text}</div>
+                    <div class="item-keywords">Listening for: ${keywordsText}</div>
+                </div>
+            `;
+
+            itemDiv.addEventListener('click', () => toggleItem(item.id));
+            return itemDiv;
         }
 
         // Show missed items by sorting them to the top
