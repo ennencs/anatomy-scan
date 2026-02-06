@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Fetal Anatomy Checklist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mode-toggle {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            padding: 10px 25px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .debug-toggle {
+            margin-top: 15px;
+        }
+
+        .debug-toggle label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .debug-toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .debug-panel {
+            background: #1f2937;
+            color: #10b981;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .debug-panel.active {
+            display: block;
+        }
+
+        .debug-entry {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-left: 3px solid #10b981;
+            padding-left: 10px;
+        }
+
+        .debug-timestamp {
+            color: #6b7280;
+            font-size: 0.85em;
+        }
+
+        .debug-matched {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .download-debug-btn {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            display: inline-block;
+            font-size: 0.9em;
+        }
+
+        .status.listening {
+            background: #4ade80;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .start-btn {
+            background: #4ade80;
+            color: white;
+        }
+
+        .stop-btn {
+            background: #f87171;
+            color: white;
+        }
+
+        .reset-btn {
+            background: #60a5fa;
+            color: white;
+        }
+
+        .show-missed-btn {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .missed-items-header {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-weight: 700;
+            color: #92400e;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .progress-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .transcript {
+            padding: 15px 30px;
+            background: #fef3c7;
+            border-top: 2px solid #fbbf24;
+            font-style: italic;
+            color: #92400e;
+            min-height: 50px;
+            font-size: 1.1em;
+        }
+
+        .test-mode {
+            display: none;
+            padding: 30px;
+        }
+
+        .test-mode.active {
+            display: block;
+        }
+
+        .test-item-display {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-item-name {
+            font-size: 3em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .test-keywords {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .test-keywords h3 {
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        .keyword-tag {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-weight: 600;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .test-status {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .test-status.waiting {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .test-status.recognized {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .checklist {
+            padding: 30px;
+            display: none;
+        }
+
+        .checklist.active {
+            display: block;
+        }
+
+        .category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: #e5e7eb;
+            transform: translateX(5px);
+        }
+
+        .checklist-item.checked {
+            background: #d1fae5;
+            border-left: 4px solid #22c55e;
+        }
+
+        .checklist-item.just-checked {
+            animation: checkAnimation 0.6s ease;
+        }
+
+        @keyframes checkAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background: #a7f3d0; }
+            100% { transform: scale(1); }
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #9ca3af;
+            border-radius: 6px;
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item.checked .checkbox {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .checkbox::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .checklist-item.checked .checkbox::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 1em;
+            color: #374151;
+        }
+
+        .checklist-item.checked .item-text {
+            color: #059669;
+        }
+
+        .item-keywords {
+            flex: 1;
+            font-size: 0.75em;
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 3px;
+            line-height: 1.3;
+        }
+
+        .checklist-item.checked .item-keywords {
+            color: #34d399;
+        }
+
+        .listening-indicator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: #4ade80;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .listening-indicator.active {
+            display: flex;
+        }
+
+        .listening-indicator::before {
+            content: '🎤';
+            font-size: 30px;
+        }
+
+        .unsupported {
+            padding: 30px;
+            background: #fee2e2;
+            color: #991b1b;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔊 Voice Fetal Anatomy Checklist</h1>
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="normalModeBtn">Normal Mode</button>
+                <button class="mode-btn" id="testModeBtn">Test Mode</button>
+            </div>
+            <div class="debug-toggle">
+                <label>
+                    <input type="checkbox" id="debugToggle">
+                    🐛 Debug Mode (capture all speech)
+                </label>
+            </div>
+            <div class="status" id="status">Ready to listen</div>
+        </div>
+
+        <div class="controls">
+            <button class="start-btn" id="startBtn">Start Listening</button>
+            <button class="stop-btn" id="stopBtn" style="display:none;">Stop Listening</button>
+            <button class="reset-btn" id="resetBtn">Reset All</button>
+            <button class="reset-btn" id="showMissedBtn">Show Missed Items</button>
+            <button class="download-debug-btn" id="downloadDebugBtn" style="display:none;">Download Debug Log</button>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+        </div>
+
+        <div class="transcript" id="transcript">Last heard: ...</div>
+
+        <div class="debug-panel" id="debugPanel"></div>
+
+        <!-- Test Mode -->
+        <div class="test-mode" id="testMode">
+            <div class="test-item-display">
+                <div class="test-item-name" id="testItemName">Click "Next" to start</div>
+                <div class="test-keywords" id="testKeywords"></div>
+                <div class="test-status waiting" id="testStatus">Say any of the keywords above to check off this item</div>
+            </div>
+            <div class="test-controls">
+                <button class="reset-btn" id="prevTestBtn">← Previous</button>
+                <button class="start-btn" id="nextTestBtn">Next →</button>
+                <button class="stop-btn" id="skipTestBtn">Skip</button>
+            </div>
+        </div>
+
+        <!-- Normal Mode -->
+        <div class="checklist active" id="checklist"></div>
+    </div>
+
+    <div class="listening-indicator" id="listeningIndicator"></div>
+
+    <script>
+        // Your exact checklist reorganized to match ultrasound software layout
+        const checklistData = {
+            "General": [
+                { text: "Placenta", keywords: ["placenta", "placental"] },
+                { text: "PCI", keywords: ["pci", "placental cord insertion", "cord insertion"] },
+                { text: "MVP", keywords: ["mvp", "maximum vertical pocket"] },
+                { text: "Cervix", keywords: ["cervix", "cervical"] },
+                { text: "Adnexa", keywords: ["adnexa", "adnexal", "add nexa", "addnexa"] }
+            ],
+            "Head/Neck": [
+                { text: "Lateral vents", keywords: ["lateral vents", "lateral ventricles", "ventricles", "vents", "lateral vent"] },
+                { text: "Choroids", keywords: ["choroid", "choroids", "choroid plexus", "cords", "chords", "steroids", "corduroys"] },
+                { text: "Falx", keywords: ["falx", "falx cerebri", "fox", "volks", "folks"] },
+                { text: "CSP", keywords: ["csp", "cavum septum pellucidum", "cavum"] },
+                { text: "3rd vent*", keywords: ["third vent", "3rd vent", "third ventricle"] },
+                { text: "4th vent*", keywords: ["fourth vent", "4th vent", "fourth ventricle"] },
+                { text: "Cerebellum", keywords: ["cerebellum", "cerebellar", "posterior fossa", "post fossa", "fossa"] },
+                { text: "Cisterna magna", keywords: ["cisterna magna", "cisterna", "cm", "sister in magna", "sisterna", "posterior fossa", "post fossa", "fossa"] },
+                { text: "NF", keywords: ["nf", "nuchal fold", "nuchal", "nuclefold", "nucle fold", "nickel fold", "posterior fossa", "post fossa", "fossa"] }
+            ],
+            "Face": [
+                { text: "Profile", keywords: ["profile", "facial profile"] },
+                { text: "NB", keywords: ["nb", "nasal bone", "nasal", "nasal bow"] },
+                { text: "Nose/Lips", keywords: ["nose", "lips", "upper lip", "nasal", "oral", "no slips", "nose lips"] },
+                { text: "Palate/Maxilla", keywords: ["palate", "maxilla", "hard palate", "soft palate", "palette", "pallet", "maxella"] },
+                { text: "Mandible", keywords: ["mandible", "jaw", "lower jaw"] },
+                { text: "Orbits", keywords: ["orbit", "orbits", "eyes", "eye"] }
+            ],
+            "Heart": [
+                { text: "4CH", keywords: ["four chamber", "4 chamber", "4ch", "four ch", "for chamber"] },
+                { text: "Septum", keywords: ["septum", "cardiac septum", "ventricular septum", "interventricular septum", "ivs", "atrial septum"] },
+                { text: "LVOT", keywords: ["lvot", "left ventricular outflow", "left outflow", "l v o t", "el v o t", "lbot", "el bot"] },
+                { text: "RVOT", keywords: ["rvot", "right ventricular outflow", "right outflow", "r v o t", "ar v o t"] },
+                { text: "3VV", keywords: ["three vessel", "3 vessel", "3vv", "three vessel view"] },
+                { text: "3VTV*", keywords: ["3vtv", "three vessel trachea", "trachea view", "3v tv", "3 v tv", "3b tv"] },
+                { text: "Situs", keywords: ["situs", "cardiac situs", "heart situs", "situs solitus", "cytus", "cystitis", "cytos", "cis", "citrus", "sites", "citus"] },
+                { text: "AA*", keywords: ["aortic arch", "aa", "arch", "aortic", "were garch", "aorta arch", "duck arch", "duct arch"] },
+                { text: "Ductal Arch*", keywords: ["ductal arch", "ductal", "ductus", "duct", "da", "duck arch", "duct arch"] },
+                { text: "SVC/IVC*", keywords: ["svc", "ivc", "superior vena cava", "inferior vena cava", "vena cava", "ibc", "svc ibc", "spc", "bicaval", "bi caval", "crossing"] }
+            ],
+            "Thorax": [
+                { text: "Lungs*", keywords: ["lung", "lungs", "pulmonary"] },
+                { text: "Diaphragm", keywords: ["diaphragm"] }
+            ],
+            "Abdomen": [
+                { text: "Stomach", keywords: ["stomach", "gastric", "stomach bubble"] },
+                { text: "Kidneys", keywords: ["kidney", "kidneys", "renal"] },
+                { text: "Bladder", keywords: ["bladder", "urinary bladder"] },
+                { text: "ACI", keywords: ["aci", "abdominal cord insertion"] },
+                { text: "3VC", keywords: ["3vc", "three vessel cord", "cord vessels"] }
+            ],
+            "Spine": [
+                { text: "C Spine", keywords: ["c spine", "cervical spine", "neck", "sea spine", "see spine", "all spine", "whole spine", "entire spine"] },
+                { text: "T Spine", keywords: ["t spine", "thoracic spine", "mid spine", "despine", "de spine", "tea spine", "all spine", "whole spine", "entire spine"] },
+                { text: "L Spine", keywords: ["l spine", "lumbar spine", "lower spine", "el spine", "all spine", "whole spine", "entire spine"] },
+                { text: "S Spine", keywords: ["s spine", "sacral spine", "sacrum", "es spine", "all spine", "whole spine", "entire spine"] }
+            ],
+            "Extremities": [
+                { text: "Right humerus", keywords: ["right humerus", "right humorous", "right arm", "right upper arm", "write humorous", "both humerus", "both humorous", "both arms"] },
+                { text: "Left humerus", keywords: ["left humerus", "left humorous", "left arm", "left upper arm", "both humerus", "both humorous", "both arms"] },
+                { text: "Right rad/ulna", keywords: ["right rad", "right ulna", "right radius", "right radial", "right forearm", "right radona", "right rad ulna", "right on", "right humerus and rad", "right humerus rad", "right forearm in hand", "right humerus and forearm"] },
+                { text: "Left rad/ulna", keywords: ["left rad", "left ulna", "left radius", "left radial", "left forearm", "left radona", "left rad ulna", "left rad on", "left humerus and rad", "left humerus rad", "left forearm and hand", "left hand and left forearm"] },
+                { text: "Right hand", keywords: ["right hand", "both hands", "right forearm in hand"] },
+                { text: "Left hand", keywords: ["left hand", "both hands", "left hand and left forearm", "left forearm and hand"] },
+                { text: "Right femur", keywords: ["right femur", "right leg", "right thigh", "both femurs", "both femur", "both legs"] },
+                { text: "Left femur", keywords: ["left femur", "left leg", "left thigh", "both femurs", "both femur", "both legs"] },
+                { text: "Right tib/fib", keywords: ["right tib", "right fib", "right tibia", "right fibula", "right lower leg", "right tip fib", "right hip fib", "right femur and tib", "right femur tib", "both lower legs", "both ted fib", "both tib fib", "right and left tab fib", "right and left tib fib"] },
+                { text: "Left tib/fib", keywords: ["left tib", "left fib", "left tibia", "left fibula", "left lower leg", "lifted", "lift tib", "left tip fib", "left hip fib", "left femur and tib", "left femur tib", "both lower legs", "both ted fib", "both tib fib", "right and left tab fib", "right and left tib fib"] },
+                { text: "Right foot", keywords: ["right foot", "right feet", "both feet", "both foot"] },
+                { text: "Left foot", keywords: ["left foot", "left feet", "both feet", "both foot"] }
+            ]
+        };
+
+        let recognition;
+        let isListening = false;
+        let checkedItems = new Set();
+        let currentMode = 'normal';
+        let testModeIndex = 0;
+        let allTestItems = [];
+        let debugMode = false;
+        let debugLog = [];
+
+        // Debug logging function
+        function addDebugEntry(transcript, matched = null) {
+            if (!debugMode) return;
+
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = {
+                timestamp: timestamp,
+                transcript: transcript,
+                matched: matched
+            };
+            debugLog.push(entry);
+
+            // Update debug panel
+            const debugPanel = document.getElementById('debugPanel');
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'debug-entry';
+            
+            let html = `<span class="debug-timestamp">[${timestamp}]</span> "${transcript}"`;
+            if (matched && matched.length > 0) {
+                html += ` <span class="debug-matched">→ MATCHED: ${matched.join(', ')}</span>`;
+            }
+            entryDiv.innerHTML = html;
+            
+            debugPanel.insertBefore(entryDiv, debugPanel.firstChild);
+        }
+
+        // Download debug log
+        function downloadDebugLog() {
+            const logText = debugLog.map(entry => {
+                let line = `[${entry.timestamp}] "${entry.transcript}"`;
+                if (entry.matched && entry.matched.length > 0) {
+                    line += ` → MATCHED: ${entry.matched.join(', ')}`;
+                }
+                return line;
+            }).join('\n');
+
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `voice-debug-log-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize the checklist
+        function initChecklist() {
+            const checklistEl = document.getElementById('checklist');
+            checklistEl.innerHTML = '';
+
+            Object.entries(checklistData).forEach(([category, items]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const categoryTitle = document.createElement('div');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category;
+                categoryDiv.appendChild(categoryTitle);
+
+                items.forEach((item, index) => {
+                    const itemId = `${category}-${index}`;
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'checklist-item';
+                    itemDiv.dataset.id = itemId;
+                    itemDiv.dataset.keywords = JSON.stringify(item.keywords);
+                    
+                    // Create keywords display (first 5 keywords, then "+ X more")
+                    const displayKeywords = item.keywords.slice(0, 5);
+                    const remainingCount = item.keywords.length - 5;
+                    let keywordsText = displayKeywords.map(k => `"${k}"`).join(', ');
+                    if (remainingCount > 0) {
+                        keywordsText += `, +${remainingCount} more`;
+                    }
+                    
+                    itemDiv.innerHTML = `
+                        <div class="checkbox"></div>
+                        <div style="flex: 1;">
+                            <div class="item-text">${item.text}</div>
+                            <div class="item-keywords">Listening for: ${keywordsText}</div>
+                        </div>
+                    `;
+
+                    itemDiv.addEventListener('click', () => toggleItem(itemId));
+                    categoryDiv.appendChild(itemDiv);
+
+                    // Add to test items array
+                    allTestItems.push({
+                        id: itemId,
+                        category: category,
+                        text: item.text,
+                        keywords: item.keywords
+                    });
+                });
+
+                checklistEl.appendChild(categoryDiv);
+            });
+        }
+
+        // Toggle item checked state
+        function toggleItem(itemId, playSound = true) {
+            const itemEl = document.querySelector(`[data-id="${itemId}"]`);
+            if (!itemEl) return;
+
+            if (checkedItems.has(itemId)) {
+                checkedItems.delete(itemId);
+                itemEl.classList.remove('checked');
+            } else {
+                checkedItems.add(itemId);
+                itemEl.classList.add('checked', 'just-checked');
+                if (playSound) {
+                    playCheckSound(1);
+                }
+                setTimeout(() => itemEl.classList.remove('just-checked'), 600);
+            }
+
+            updateProgress();
+        }
+
+        // Play a subtle check sound (multiple beeps for multiple items)
+        function playCheckSound(count = 1) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                }, i * 200); // 200ms between beeps
+            }
+        }
+
+        // Play a different sound for already-checked items (lower pitch, single beep)
+        function playAlreadyCheckedSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 400; // Lower pitch than check sound
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const totalItems = allTestItems.length;
+            const checkedCount = checkedItems.size;
+            const percentage = Math.round((checkedCount / totalItems) * 100);
+            
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = `${checkedCount}/${totalItems} (${percentage}%)`;
+        }
+
+        // Show missed items by sorting them to the top
+        function showMissedItems() {
+            const checklistEl = document.getElementById('checklist');
+            const categories = checklistEl.querySelectorAll('.category');
+            
+            // Check if there are any unchecked items
+            const missedItems = [];
+            allTestItems.forEach(item => {
+                if (!checkedItems.has(item.id)) {
+                    missedItems.push(item);
+                }
+            });
+
+            if (missedItems.length === 0) {
+                alert('✓ All items checked! Great job!');
+                return;
+            }
+
+            // Clear existing checklist
+            checklistEl.innerHTML = '';
+
+            // Add missed items header
+            const missedHeader = document.createElement('div');
+            missedHeader.className = 'missed-items-header';
+            missedHeader.textContent = `⚠️ ${missedItems.length} Missed Items - Review These First`;
+            checklistEl.appendChild(missedHeader);
+
+            // Group missed items by category
+            const missedByCategory = {};
+            missedItems.forEach(item => {
+                if (!missedByCategory[item.category]) {
+                    missedByCategory[item.category] = [];
+                }
+                missedByCategory[item.category].push(item);
+            });
+
+            // Add missed items sections
+            Object.entries(missedByCategory).forEach(([category, items]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const categoryTitle = document.createElement('div');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = `${category} (${items.length} missed)`;
+                categoryTitle.style.color = '#f59e0b';
+                categoryDiv.appendChild(categoryTitle);
+
+                items.forEach(item => {
+                    const itemDiv = document.querySelector(`[data-id="${item.id}"]`).cloneNode(true);
+                    itemDiv.addEventListener('click', () => toggleItem(item.id));
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                checklistEl.appendChild(categoryDiv);
+            });
+
+            // Add separator
+            const separator = document.createElement('div');
+            separator.style.height = '2px';
+            separator.style.background = '#e5e7eb';
+            separator.style.margin = '30px 0';
+            checklistEl.appendChild(separator);
+
+            // Add completed items header
+            const completedHeader = document.createElement('div');
+            completedHeader.className = 'category-title';
+            completedHeader.textContent = '✓ Completed Items';
+            completedHeader.style.color = '#22c55e';
+            checklistEl.appendChild(completedHeader);
+
+            // Group completed items by category
+            const completedByCategory = {};
+            allTestItems.forEach(item => {
+                if (checkedItems.has(item.id)) {
+                    if (!completedByCategory[item.category]) {
+                        completedByCategory[item.category] = [];
+                    }
+                    completedByCategory[item.category].push(item);
+                }
+            });
+
+            // Add completed items sections
+            Object.entries(completedByCategory).forEach(([category, items]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const categoryTitle = document.createElement('div');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category;
+                categoryDiv.appendChild(categoryTitle);
+
+                items.forEach(item => {
+                    const itemDiv = document.querySelector(`[data-id="${item.id}"]`).cloneNode(true);
+                    itemDiv.addEventListener('click', () => toggleItem(item.id));
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                checklistEl.appendChild(categoryDiv);
+            });
+        }
+
+        // Process speech and check items
+        function processSpeech(transcript) {
+            const lowerTranscript = transcript.toLowerCase();
+            document.getElementById('transcript').textContent = `Last heard: "${transcript}"`;
+
+            // Check for "done" or "show missed" commands
+            if (lowerTranscript.includes('done') || lowerTranscript.includes('show missed') || lowerTranscript.includes('missed items')) {
+                showMissedItems();
+                addDebugEntry(transcript, ['SHOW MISSED COMMAND']);
+                return;
+            }
+
+            let matchedItems = [];
+            let newlyCheckedCount = 0;
+            let alreadyCheckedCount = 0;
+
+            if (currentMode === 'test') {
+                // Test mode - only check current item
+                if (testModeIndex < allTestItems.length) {
+                    const currentItem = allTestItems[testModeIndex];
+                    const matched = currentItem.keywords.some(keyword => 
+                        lowerTranscript.includes(keyword.toLowerCase())
+                    );
+
+                    if (matched) {
+                        if (!checkedItems.has(currentItem.id)) {
+                            toggleItem(currentItem.id, false); // Don't play sound yet
+                            matchedItems.push(currentItem.text);
+                            newlyCheckedCount++;
+                            document.getElementById('testStatus').textContent = `✓ Recognized! "${transcript}"`;
+                            document.getElementById('testStatus').className = 'test-status recognized';
+                            
+                            // Auto-advance after 1 second
+                            setTimeout(() => {
+                                nextTestItem();
+                            }, 1000);
+                        } else {
+                            alreadyCheckedCount++;
+                            matchedItems.push(currentItem.text + ' (already checked)');
+                        }
+                    }
+                }
+            } else {
+                // Normal mode - check all items
+                allTestItems.forEach(item => {
+                    const matched = item.keywords.some(keyword => 
+                        lowerTranscript.includes(keyword.toLowerCase())
+                    );
+
+                    if (matched) {
+                        if (!checkedItems.has(item.id)) {
+                            toggleItem(item.id, false); // Don't play sound yet
+                            matchedItems.push(item.text);
+                            newlyCheckedCount++;
+                        } else {
+                            alreadyCheckedCount++;
+                            matchedItems.push(item.text + ' (already checked)');
+                        }
+                    }
+                });
+            }
+
+            // Play appropriate sounds
+            if (newlyCheckedCount > 0) {
+                playCheckSound(newlyCheckedCount);
+            }
+            if (alreadyCheckedCount > 0) {
+                setTimeout(() => {
+                    playAlreadyCheckedSound();
+                }, newlyCheckedCount * 200 + 100); // Play after new check sounds
+            }
+
+            // Add to debug log
+            addDebugEntry(transcript, matchedItems.length > 0 ? matchedItems : null);
+        }
+
+        // Test mode functions
+        function updateTestDisplay() {
+            if (testModeIndex >= allTestItems.length) {
+                document.getElementById('testItemName').textContent = '✓ Test Complete!';
+                document.getElementById('testKeywords').innerHTML = '<p>All items have been tested.</p>';
+                document.getElementById('testStatus').textContent = 'Click "Reset All" to test again';
+                document.getElementById('testStatus').className = 'test-status recognized';
+                return;
+            }
+
+            const item = allTestItems[testModeIndex];
+            document.getElementById('testItemName').textContent = item.text;
+            
+            const keywordsHTML = `
+                <h3>Listening for any of these:</h3>
+                ${item.keywords.map(kw => `<span class="keyword-tag">"${kw}"</span>`).join('')}
+            `;
+            document.getElementById('testKeywords').innerHTML = keywordsHTML;
+            
+            const isChecked = checkedItems.has(item.id);
+            if (isChecked) {
+                document.getElementById('testStatus').textContent = '✓ Already checked!';
+                document.getElementById('testStatus').className = 'test-status recognized';
+            } else {
+                document.getElementById('testStatus').textContent = 'Say any of the keywords above to check off this item';
+                document.getElementById('testStatus').className = 'test-status waiting';
+            }
+        }
+
+        function nextTestItem() {
+            testModeIndex++;
+            updateTestDisplay();
+        }
+
+        function prevTestItem() {
+            if (testModeIndex > 0) {
+                testModeIndex--;
+                updateTestDisplay();
+            }
+        }
+
+        // Mode switching
+        document.getElementById('normalModeBtn').addEventListener('click', () => {
+            currentMode = 'normal';
+            document.getElementById('normalModeBtn').classList.add('active');
+            document.getElementById('testModeBtn').classList.remove('active');
+            document.getElementById('checklist').classList.add('active');
+            document.getElementById('testMode').classList.remove('active');
+        });
+
+        document.getElementById('testModeBtn').addEventListener('click', () => {
+            currentMode = 'test';
+            document.getElementById('testModeBtn').classList.add('active');
+            document.getElementById('normalModeBtn').classList.remove('active');
+            document.getElementById('testMode').classList.add('active');
+            document.getElementById('checklist').classList.remove('active');
+            testModeIndex = 0;
+            updateTestDisplay();
+        });
+
+        document.getElementById('nextTestBtn').addEventListener('click', nextTestItem);
+        document.getElementById('prevTestBtn').addEventListener('click', prevTestItem);
+        document.getElementById('skipTestBtn').addEventListener('click', () => {
+            const item = allTestItems[testModeIndex];
+            if (!checkedItems.has(item.id)) {
+                toggleItem(item.id);
+            }
+            nextTestItem();
+        });
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                document.getElementById('checklist').innerHTML = `
+                    <div class="unsupported">
+                        <h2>⚠️ Speech Recognition Not Supported</h2>
+                        <p>Your browser doesn't support speech recognition. Please use Chrome, Edge, or Safari.</p>
+                    </div>
+                `;
+                document.getElementById('startBtn').disabled = true;
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                document.getElementById('status').textContent = '🎤 Listening...';
+                document.getElementById('status').classList.add('listening');
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('stopBtn').style.display = 'inline-block';
+                document.getElementById('listeningIndicator').classList.add('active');
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                document.getElementById('status').textContent = 'Ready to listen';
+                document.getElementById('status').classList.remove('listening');
+                document.getElementById('startBtn').style.display = 'inline-block';
+                document.getElementById('stopBtn').style.display = 'none';
+                document.getElementById('listeningIndicator').classList.remove('active');
+            };
+
+            recognition.onresult = (event) => {
+                const last = event.results.length - 1;
+                const transcript = event.results[last][0].transcript;
+                
+                if (event.results[last].isFinal) {
+                    processSpeech(transcript);
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'no-speech') {
+                    return;
+                }
+                document.getElementById('transcript').textContent = `Error: ${event.error}`;
+            };
+        }
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (recognition) {
+                recognition.start();
+            }
+        });
+
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            if (recognition) {
+                recognition.stop();
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (confirm('Reset all checked items?')) {
+                checkedItems.clear();
+                document.querySelectorAll('.checklist-item').forEach(item => {
+                    item.classList.remove('checked');
+                });
+                updateProgress();
+                document.getElementById('transcript').textContent = 'Last heard: ...';
+                testModeIndex = 0;
+                updateTestDisplay();
+            }
+        });
+
+        // Debug mode toggle
+        document.getElementById('debugToggle').addEventListener('change', (e) => {
+            debugMode = e.target.checked;
+            const debugPanel = document.getElementById('debugPanel');
+            const downloadBtn = document.getElementById('downloadDebugBtn');
+            
+            if (debugMode) {
+                debugPanel.classList.add('active');
+                downloadBtn.style.display = 'inline-block';
+                debugLog = [];
+                debugPanel.innerHTML = '<div class="debug-entry"><span class="debug-timestamp">Debug mode enabled</span> - All speech will be logged below</div>';
+            } else {
+                debugPanel.classList.remove('active');
+                downloadBtn.style.display = 'none';
+            }
+        });
+
+        // Download debug log button
+        document.getElementById('downloadDebugBtn').addEventListener('click', downloadDebugLog);
+
+        // Show missed items button
+        document.getElementById('showMissedBtn').addEventListener('click', showMissedItems);
+
+        // Initialize
+        initChecklist();
+        initSpeechRecognition();
+        updateProgress();
+    </script>
+</body>
+</html>
